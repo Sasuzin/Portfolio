@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { REPOS } from '../data/repos';
 import { EASE, lockScroll, unlockScroll } from '../lib/fx';
+import { useSwipe } from '../lib/useSwipe';
 import Portal from './Portal';
 import SectionHead from './SectionHead';
 
@@ -93,8 +94,10 @@ function ProjectModal({ index, img, setImg, onClose }: ModalProps) {
     });
   }, [index, img]);
 
+  const n = r.imgs.length;
+  const swipe = useSwipe(d => setImg(i => (i + d + n) % n));
+
   useEffect(() => {
-    const n = r.imgs.length;
     const onK = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
       else if (e.key === 'ArrowRight') setImg(i => (i + 1) % n);
@@ -102,7 +105,7 @@ function ProjectModal({ index, img, setImg, onClose }: ModalProps) {
     };
     addEventListener('keydown', onK);
     return () => removeEventListener('keydown', onK);
-  }, [r, onClose, setImg]);
+  }, [n, onClose, setImg]);
 
   return (
     <div
@@ -111,12 +114,15 @@ function ProjectModal({ index, img, setImg, onClose }: ModalProps) {
       role="dialog"
       aria-modal="true"
       aria-label={r.t}
-      onClick={e => (e.target as HTMLElement).hasAttribute('data-pclose') && onClose()}
+      onClick={e => !swipe.wasSwiped() && (e.target as HTMLElement).hasAttribute('data-pclose') && onClose()}
     >
       <div ref={panelRef} className="pm">
+        <button type="button" className="pm-x" data-pclose="" aria-label="Fechar">
+          ✕
+        </button>
         <div className="pm-media">
-          <div className="pm-stage">
-            <img ref={imgRef} src={r.imgs[img] || r.imgs[0]} alt={r.t} />
+          <div className="pm-stage" {...swipe.handlers}>
+            <img ref={imgRef} src={r.imgs[img] || r.imgs[0]} alt={r.t} draggable={false} />
           </div>
           <div className="pm-thumbs">
             {r.imgs.map((src, i) => (
@@ -138,7 +144,7 @@ function ProjectModal({ index, img, setImg, onClose }: ModalProps) {
               {r.repo} · {r.year}
             </span>
             <button ref={closeBtn} type="button" className="ghost-btn" data-pclose="">
-              ESC ✕
+              <span className="kbd-only">ESC </span>✕
             </button>
           </div>
           <div className="pm-title">

@@ -1,6 +1,13 @@
 import { memo } from 'react';
 import SectionHead from './SectionHead';
 
+const INFO: [string, string][] = [
+  ['função', 'Desenvolvedor full-stack'],
+  ['empresa', 'HKTC · importação China–Brasil'],
+  ['foco', 'Agentes de IA · automação · segurança'],
+  ['formação', 'TSI · Faculdade Senac (2023)'],
+];
+
 function Sobre() {
   return (
     <section id="sobre" className="sec sobre" aria-label="Sobre">
@@ -24,12 +31,20 @@ function Sobre() {
           <div data-reveal="" data-delay="120" className="panel sysinfo">
             <div className="win-bar">sys.info</div>
             <div className="sysinfo-body">
-              <div><b>função</b>{'      Desenvolvedor full-stack'}</div>
-              <div><b>empresa</b>{'     HKTC · importação China–Brasil'}</div>
-              <div><b>foco</b>{'        Agentes de IA · automação · segurança'}</div>
-              <div><b>formação</b>{'    TSI · Faculdade Senac (2023)'}</div>
-              <a href="#certificados"><b>certificados</b>{' 26 · Viver de IA + Alura ↗'}</a>
-              <div><b>idiomas</b>{'     PT nativo · EN avançado · ES intermediário'}</div>
+              {INFO.map(([k, v]) => (
+                <div key={k} className="kv">
+                  <b>{k}</b>
+                  <span>{v}</span>
+                </div>
+              ))}
+              <a href="#certificados" className="kv">
+                <b>certificados</b>
+                <span>26 · Viver de IA + Alura ↗</span>
+              </a>
+              <div className="kv">
+                <b>idiomas</b>
+                <span>PT nativo · EN avançado · ES intermediário</span>
+              </div>
             </div>
           </div>
         </div>

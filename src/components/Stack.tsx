@@ -1,6 +1,6 @@
 import { memo, useLayoutEffect, useRef, useState } from 'react';
 import { STACK } from '../data/stack';
-import { EASE, prefersReducedMotion } from '../lib/fx';
+import { EASE, centerTab, prefersReducedMotion } from '../lib/fx';
 import SectionHead from './SectionHead';
 
 function Stack() {
@@ -39,7 +39,10 @@ function Stack() {
             role="tab"
             aria-selected={tab === i}
             className={`tab${tab === i ? ' on' : ''}`}
-            onClick={() => setTab(i)}
+            onClick={e => {
+              setTab(i);
+              centerTab(e.currentTarget);
+            }}
           >
             {label}
           </button>

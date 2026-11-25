@@ -22,21 +22,25 @@ const circleFrag = (body: string) =>
   `uniform vec3 uCol;varying float vA;varying float vD;void main(){float l=length(gl_PointCoord-.5);if(l>.5)discard;float a=smoothstep(.5,.12,l);${body}}`;
 
 export function sceneTerrain(host: HTMLElement, o: Options = {}): Terrain | null {
+  // Celular/tablet: menos pontos e resolução limitada para manter 60fps e poupar bateria.
+  // O tamanho do ponto acompanha o dpr, então o visual em CSS px fica o mesmo.
+  const small = Math.min(innerWidth, innerHeight) < 700 || matchMedia('(pointer: coarse)').matches;
+
   let r: THREE.WebGLRenderer;
   try {
-    r = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    r = new THREE.WebGLRenderer({ antialias: !small, alpha: true, powerPreference: small ? 'low-power' : 'default' });
   } catch {
     return null; // sem WebGL: fica só o fundo liso
   }
   r.outputColorSpace = THREE.LinearSRGBColorSpace;
-  const dpr = Math.min(devicePixelRatio, 2);
+  const dpr = Math.min(devicePixelRatio, small ? 1.5 : 2);
   r.setPixelRatio(dpr);
   host.appendChild(r.domElement);
   r.domElement.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block';
 
   const scene = new THREE.Scene();
   const cam = new THREE.PerspectiveCamera(55, 1, 0.1, 120);
-  const pg = new THREE.PlaneGeometry(70, 90, 170, 220);
+  const pg = small ? new THREE.PlaneGeometry(70, 90, 128, 166) : new THREE.PlaneGeometry(70, 90, 170, 220);
   pg.rotateX(-Math.PI / 2);
 
   const U = {

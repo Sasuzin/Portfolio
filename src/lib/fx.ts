@@ -130,6 +130,17 @@ export function cursor(el: HTMLElement | null) {
   };
 }
 
+/** Centraliza a aba tocada quando as abas viram uma faixa com rolagem lateral (celular). */
+export function centerTab(el: HTMLElement) {
+  const strip = el.parentElement;
+  if (!strip || strip.scrollWidth <= strip.clientWidth) return;
+  const d = el.getBoundingClientRect().left - strip.getBoundingClientRect().left;
+  strip.scrollTo({
+    left: strip.scrollLeft + d - (strip.clientWidth - el.offsetWidth) / 2,
+    behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+  });
+}
+
 /* Trava de rolagem compartilhada pelos modais (lightbox e projeto). */
 let locks = 0;
 export function lockScroll() {

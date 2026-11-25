@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import { CERTS, CERT_CATS, TOTAL_MIN, fmtMin, type Cert } from '../data/certs';
-import { EASE, isScrollLocked, lockScroll, prefersReducedMotion, scramble, unlockScroll } from '../lib/fx';
+import { EASE, centerTab, isScrollLocked, lockScroll, prefersReducedMotion, scramble, unlockScroll } from '../lib/fx';
+import { useSwipe } from '../lib/useSwipe';
 import Portal from './Portal';
 import SectionHead from './SectionHead';
 
@@ -169,9 +170,10 @@ function Certificados() {
             role="tab"
             aria-selected={ctab === i}
             className={`tab${ctab === i ? ' on' : ''}`}
-            onClick={() => {
+            onClick={e => {
               setCtab(i);
               setCi(0);
+              centerTab(e.currentTarget);
             }}
           >
             {label}
@@ -333,6 +335,8 @@ function Lightbox({ cert, pos, index, dir, onPrev, onNext, onClose }: LightboxPr
     closeBtn.current?.focus({ preventScroll: true });
   }, []);
 
+  const swipe = useSwipe(d => (d > 0 ? onNext() : onPrev()));
+
   return (
     <div
       className="overlay lbox"
@@ -340,22 +344,22 @@ function Lightbox({ cert, pos, index, dir, onPrev, onNext, onClose }: LightboxPr
       role="dialog"
       aria-modal="true"
       aria-label={`Certificado: ${cert.t}`}
-      onClick={e => (e.target as HTMLElement).hasAttribute('data-close') && onClose()}
+      onClick={e => !swipe.wasSwiped() && (e.target as HTMLElement).hasAttribute('data-close') && onClose()}
     >
       <div className="lb-top">
         <span>
           CERTIFICADO <span className="acc">{pos}</span>
         </span>
         <button ref={closeBtn} type="button" className="ghost-btn lb-close" data-close="">
-          ESC · fechar ✕
+          <span className="kbd-only">ESC · </span>fechar ✕
         </button>
       </div>
-      <div className="lb-mid" data-close="">
+      <div className="lb-mid" data-close="" {...swipe.handlers}>
         <button type="button" className="round-btn lb-nav" title="Anterior" onClick={onPrev}>
           ←
         </button>
         <div className="lb-img" data-close="">
-          <img ref={imgRef} src={cert.img} alt={cert.t} />
+          <img ref={imgRef} src={cert.img} alt={cert.t} draggable={false} />
         </div>
         <button type="button" className="round-btn lb-nav" title="Próximo" onClick={onNext}>
           →
