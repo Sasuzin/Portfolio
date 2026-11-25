@@ -1,17 +1,17 @@
-import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { REPOS } from '../data/repos';
-import { EASE, lockScroll, unlockScroll } from '../lib/fx';
-import { useSwipe } from '../lib/useSwipe';
+import { useT } from '../i18n';
+import { lockScroll, unlockScroll } from '../lib/fx';
 import Portal from './Portal';
 import SectionHead from './SectionHead';
+import ShowcaseModal from './ShowcaseModal';
 
 function GitHub() {
+  const { t } = useT();
   const [pm, setPm] = useState(-1);
-  const [pimg, setPimg] = useState(0);
 
   const open = (i: number) => {
     lockScroll();
-    setPimg(0);
     setPm(i);
   };
   const close = useCallback(() => {
@@ -19,8 +19,10 @@ function GitHub() {
     setPm(-1);
   }, []);
 
+  const r = REPOS[pm];
+
   return (
-    <section id="github" className="sec" aria-label="Projetos abertos no GitHub">
+    <section id="github" className="sec" aria-label={t({ pt: 'Projetos abertos no GitHub', en: 'Open projects on GitHub' })}>
       <SectionHead n="03">
         <a href="https://github.com/Sasuzin" target="_blank" rel="noreferrer" className="lb">
           GITHUB.COM/SASUZIN ↗
@@ -28,156 +30,70 @@ function GitHub() {
       </SectionHead>
       <div className="gh-top">
         <h2 data-scramble="" className="h2-big">
-          Projetos abertos
+          {t({ pt: 'Projetos abertos', en: 'Open projects' })}
         </h2>
-        <p>Projetos pessoais e acadêmicos publicados no GitHub — clique para ver detalhes, telas e o link do site.</p>
+        <p>
+          {t({
+            pt: 'Projetos pessoais e acadêmicos publicados no GitHub — clique para ver detalhes, telas e o link do site.',
+            en: 'Personal and academic projects published on GitHub — click to see details, screens and the live link.',
+          })}
+        </p>
       </div>
       <div className="gh-grid">
-        {REPOS.map((r, i) => (
-          <button key={r.repo} type="button" className="gh-card" onClick={() => open(i)}>
-            <div className="gh-cover" style={{ background: r.bg }}>
-              <img src={r.cover} alt={r.t} loading="lazy" style={{ objectFit: r.fit, padding: r.pad }} />
-              <span className="gh-kind">{r.kind}</span>
+        {REPOS.map((repo, i) => (
+          <button key={repo.repo} type="button" className="gh-card" onClick={() => open(i)}>
+            <div className="gh-cover" style={{ background: repo.bg }}>
+              <img src={repo.cover} alt={t(repo.t)} loading="lazy" style={{ objectFit: repo.fit, padding: repo.pad }} />
+              <span className="gh-kind">{t(repo.kind)}</span>
             </div>
             <div className="gh-body">
               <div className="gh-meta">
-                <span>{r.repo}</span>
-                <span>{r.year}</span>
+                <span>{repo.repo}</span>
+                <span>{t(repo.year)}</span>
               </div>
-              <span className="gh-t">{r.t}</span>
-              <span className="gh-short">{r.short}</span>
+              <span className="gh-t">{t(repo.t)}</span>
+              <span className="gh-short">{t(repo.short)}</span>
               <div className="gh-foot">
-                <span className="gh-stack">{r.stackLine}</span>
-                <span className="gh-more">Ver detalhes →</span>
+                <span className="gh-stack">{repo.stack.slice(0, 3).map(t).join(' · ')}</span>
+                <span className="gh-more">{t({ pt: 'Ver detalhes →', en: 'View details →' })}</span>
               </div>
             </div>
           </button>
         ))}
       </div>
 
-      {pm >= 0 && (
+      {r && (
         <Portal>
-          <ProjectModal index={pm} img={pimg} setImg={setPimg} onClose={close} />
+          <ShowcaseModal
+            key={r.repo}
+            meta={`${r.repo} · ${t(r.year)}`}
+            kind={t(r.kind)}
+            title={t(r.t)}
+            description={t(r.d)}
+            feats={r.feats.map(t)}
+            stack={r.stack.map(t)}
+            images={r.imgs.map(src => ({ src }))}
+            onClose={close}
+            actions={
+              r.live && r.liveLabel ? (
+                <>
+                  <a href={r.live} target="_blank" rel="noreferrer" className="btn-acc">
+                    {t(r.liveLabel)}
+                  </a>
+                  <a href={r.url} target="_blank" rel="noreferrer" className="btn-line">
+                    {t({ pt: 'Repositório no GitHub ↗', en: 'GitHub repository ↗' })}
+                  </a>
+                </>
+              ) : (
+                <a href={r.url} target="_blank" rel="noreferrer" className="btn-acc">
+                  {t({ pt: 'Ver código no GitHub ↗', en: 'View code on GitHub ↗' })}
+                </a>
+              )
+            }
+          />
         </Portal>
       )}
     </section>
-  );
-}
-
-interface ModalProps {
-  index: number;
-  img: number;
-  setImg: (fn: (i: number) => number) => void;
-  onClose: () => void;
-}
-
-function ProjectModal({ index, img, setImg, onClose }: ModalProps) {
-  const r = REPOS[index];
-  const panelRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
-  const closeBtn = useRef<HTMLButtonElement>(null);
-
-  // Entrada do painel
-  useLayoutEffect(() => {
-    panelRef.current?.animate(
-      [{ opacity: 0, transform: 'translateY(40px) scale(.98)' }, { opacity: 1, transform: 'none' }],
-      { duration: 650, easing: EASE },
-    );
-    closeBtn.current?.focus({ preventScroll: true });
-  }, []);
-
-  // Troca de imagem
-  useLayoutEffect(() => {
-    imgRef.current?.animate([{ opacity: 0, transform: 'scale(.97)' }, { opacity: 1, transform: 'none' }], {
-      duration: 450,
-      easing: EASE,
-    });
-  }, [index, img]);
-
-  const n = r.imgs.length;
-  const swipe = useSwipe(d => setImg(i => (i + d + n) % n));
-
-  useEffect(() => {
-    const onK = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      else if (e.key === 'ArrowRight') setImg(i => (i + 1) % n);
-      else if (e.key === 'ArrowLeft') setImg(i => (i - 1 + n) % n);
-    };
-    addEventListener('keydown', onK);
-    return () => removeEventListener('keydown', onK);
-  }, [n, onClose, setImg]);
-
-  return (
-    <div
-      className="overlay pm-overlay"
-      data-pclose=""
-      role="dialog"
-      aria-modal="true"
-      aria-label={r.t}
-      onClick={e => !swipe.wasSwiped() && (e.target as HTMLElement).hasAttribute('data-pclose') && onClose()}
-    >
-      <div ref={panelRef} className="pm">
-        <button type="button" className="pm-x" data-pclose="" aria-label="Fechar">
-          ✕
-        </button>
-        <div className="pm-media">
-          <div className="pm-stage" {...swipe.handlers}>
-            <img ref={imgRef} src={r.imgs[img] || r.imgs[0]} alt={r.t} draggable={false} />
-          </div>
-          <div className="pm-thumbs">
-            {r.imgs.map((src, i) => (
-              <button
-                key={src}
-                type="button"
-                className={`pm-thumb${i === img ? ' on' : ''}`}
-                onClick={() => setImg(() => i)}
-                aria-label={`Imagem ${i + 1}`}
-              >
-                <img src={src} alt="Miniatura" loading="lazy" />
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="pm-info">
-          <div className="pm-top">
-            <span>
-              {r.repo} · {r.year}
-            </span>
-            <button ref={closeBtn} type="button" className="ghost-btn" data-pclose="">
-              <span className="kbd-only">ESC </span>✕
-            </button>
-          </div>
-          <div className="pm-title">
-            <span className="badge-acc">{r.kind}</span>
-            <h3>{r.t}</h3>
-          </div>
-          <p className="pm-d">{r.d}</p>
-          <ul className="pm-feats">
-            {r.feats.map(f => (
-              <li key={f}>
-                <span>›</span>
-                <span>{f}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="chips-sm">
-            {r.stack.map(s => (
-              <span key={s} className="chip-sm">
-                {s}
-              </span>
-            ))}
-          </div>
-          <div className="pm-actions">
-            <a href={r.live} target="_blank" rel="noreferrer" className="btn-acc">
-              {r.liveLabel}
-            </a>
-            <a href={r.url} target="_blank" rel="noreferrer" className="btn-line">
-              Repositório no GitHub ↗
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 

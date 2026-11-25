@@ -51,6 +51,9 @@ export function sceneTerrain(host: HTMLElement, o: Options = {}): Terrain | null
     uM: { value: new THREE.Vector2(0, 0) },
     uCol: { value: new THREE.Color(o.color || '#4C8FE0') },
     uSize: { value: 1.8 * dpr },
+    // ajustes do modo claro (no escuro ficam 1 e 2, idênticos à referência)
+    uSzK: { value: 1 },
+    uPow: { value: 2 },
   };
 
   const tm = new THREE.ShaderMaterial({
@@ -58,10 +61,10 @@ export function sceneTerrain(host: HTMLElement, o: Options = {}): Terrain | null
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
-    vertexShader: `uniform float uT;uniform float uAmp;uniform vec2 uM;uniform float uSize;varying float vA;varying float vD;void main(){vec3 p=position;float h=sin(p.x*.32+uT)*.55+cos(p.z*.26+uT*.7)*.55+sin((p.x+p.z)*.14+uT*.45)*.9;float md=length(p.xz-uM);h+=exp(-md*md*.05)*1.8*sin(md*1.3-uT*3.2);p.y=h*uAmp;vD=h;vec4 mv=modelViewMatrix*vec4(p,1.);vA=clamp(1.-(-mv.z)/42.,0.,1.);gl_PointSize=uSize*(9./-mv.z);gl_Position=projectionMatrix*mv;}`,
+    vertexShader: `uniform float uT;uniform float uAmp;uniform vec2 uM;uniform float uSize;uniform float uSzK;varying float vA;varying float vD;void main(){vec3 p=position;float h=sin(p.x*.32+uT)*.55+cos(p.z*.26+uT*.7)*.55+sin((p.x+p.z)*.14+uT*.45)*.9;float md=length(p.xz-uM);h+=exp(-md*md*.05)*1.8*sin(md*1.3-uT*3.2);p.y=h*uAmp;vD=h;vec4 mv=modelViewMatrix*vec4(p,1.);vA=clamp(1.-(-mv.z)/42.,0.,1.);gl_PointSize=uSize*uSzK*(9./-mv.z);gl_Position=projectionMatrix*mv;}`,
     fragmentShader:
-      `uniform vec3 uBase;uniform float uAl;` +
-      circleFrag(`vec3 c=mix(uBase,uCol,smoothstep(-.4,1.6,vD));gl_FragColor=vec4(c,a*vA*vA*uAl);`),
+      `uniform vec3 uBase;uniform float uAl;uniform float uPow;` +
+      circleFrag(`vec3 c=mix(uBase,uCol,smoothstep(-.4,1.6,vD));gl_FragColor=vec4(c,a*pow(vA,uPow)*uAl);`),
   });
   const points = new THREE.Points(pg, tm);
   scene.add(points);
@@ -137,8 +140,12 @@ export function sceneTerrain(host: HTMLElement, o: Options = {}): Terrain | null
     setMode(light) {
       tm.blending = light ? THREE.NormalBlending : THREE.AdditiveBlending;
       tm.needsUpdate = true;
-      U.uBase.value.setRGB(...((light ? [0.62, 0.67, 0.74] : [0.32, 0.36, 0.42]) as [number, number, number]));
-      U.uAl.value = light ? 0.8 : 0.95;
+      // claro: pontos em slate mais escuro, opacos, maiores e com fade de distância mais suave,
+      // para terem contraste sobre o fundo claro (a referência usava cinza 62–74% e sumia)
+      U.uBase.value.setRGB(...((light ? [0.36, 0.43, 0.54] : [0.32, 0.36, 0.42]) as [number, number, number]));
+      U.uAl.value = light ? 1 : 0.95;
+      U.uSzK.value = light ? 1.35 : 1;
+      U.uPow.value = light ? 1.4 : 2;
       if (still) frame(false);
     },
     destroy() {

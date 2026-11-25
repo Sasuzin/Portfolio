@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import { CERTS, CERT_CATS, TOTAL_MIN, fmtMin, type Cert } from '../data/certs';
 import { EASE, centerTab, isScrollLocked, lockScroll, prefersReducedMotion, scramble, unlockScroll } from '../lib/fx';
+import { fmtDate, useT } from '../i18n';
 import { useSwipe } from '../lib/useSwipe';
 import Portal from './Portal';
 import SectionHead from './SectionHead';
@@ -9,6 +10,7 @@ const AUTOPLAY_MS = 5200;
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
 function Certificados() {
+  const { t, lang } = useT();
   const [ctab, setCtab] = useState(0);
   const [ci, setCi] = useState(0);
   const [playing, setPlaying] = useState(() => !prefersReducedMotion());
@@ -144,20 +146,20 @@ function Certificados() {
   };
 
   return (
-    <section id="certificados" className="sec" aria-label="Certificados">
+    <section id="certificados" className="sec" aria-label={t({ pt: 'Certificados', en: 'Certificates' })}>
       <SectionHead n="06">VIVER DE IA · ALURA</SectionHead>
       <div className="cert-top">
         <h2 data-scramble="" className="h2-big">
-          Certificados
+          {t({ pt: 'Certificados', en: 'Certificates' })}
         </h2>
         <div className="metrics">
           <div className="metric">
             <b>{CERTS.length}</b>
-            <span>CERTIFICADOS</span>
+            <span>{t({ pt: 'CERTIFICADOS', en: 'CERTIFICATES' })}</span>
           </div>
           <div className="metric">
             <b className="acc">{fmtMin(TOTAL_MIN)}</b>
-            <span>DE FORMAÇÃO</span>
+            <span>{t({ pt: 'DE FORMAÇÃO', en: 'OF TRAINING' })}</span>
           </div>
         </div>
       </div>
@@ -165,7 +167,7 @@ function Certificados() {
       <div className="tabs cert-tabs" role="tablist">
         {CERT_CATS.map((label, i) => (
           <button
-            key={label}
+            key={label.pt}
             type="button"
             role="tab"
             aria-selected={ctab === i}
@@ -176,7 +178,7 @@ function Certificados() {
               centerTab(e.currentTarget);
             }}
           >
-            {label}
+            {t(label)}
             <span className="cnt">{i ? CERTS.filter(c => c.cat === i).length : CERTS.length}</span>
           </button>
         ))}
@@ -209,7 +211,7 @@ function Certificados() {
                 className={`car-card${a === 0 ? ' on' : ''}`}
                 role="button"
                 tabIndex={a === 0 ? 0 : -1}
-                aria-label={a === 0 ? `Ver certificado: ${c.t}` : c.t}
+                aria-label={a === 0 ? `${t({ pt: 'Ver certificado', en: 'View certificate' })}: ${c.t}` : c.t}
                 onKeyDown={e => a === 0 && (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), openCur())}
                 onClick={() => {
                   if (live.current.dragged) {
@@ -264,26 +266,26 @@ function Certificados() {
               {curCert.t}
             </h3>
             <div className="car-meta">
-              {curCert.code} · {curCert.date} · <span className="acc">{fmtMin(curCert.min)}</span>
+              {curCert.code} · {fmtDate(curCert.date, lang)} · <span className="acc">{fmtMin(curCert.min)}</span>
             </div>
           </div>
           <div className="car-ctrls">
-            <button type="button" className="round-btn" title="Anterior" onClick={() => go(-1)}>
+            <button type="button" className="round-btn" title={t({ pt: 'Anterior', en: 'Previous' })} onClick={() => go(-1)}>
               ←
             </button>
             <button
               type="button"
               className="round-btn sm"
-              title={playing ? 'Pausar' : 'Reproduzir'}
+              title={playing ? t({ pt: 'Pausar', en: 'Pause' }) : t({ pt: 'Reproduzir', en: 'Play' })}
               onClick={() => setPlaying(p => !p)}
             >
               {playing ? '❚❚' : '▶'}
             </button>
-            <button type="button" className="round-btn" title="Próximo" onClick={() => go(1)}>
+            <button type="button" className="round-btn" title={t({ pt: 'Próximo', en: 'Next' })} onClick={() => go(1)}>
               →
             </button>
             <button type="button" className="cta" onClick={openCur}>
-              Ver certificado ⤢
+              {t({ pt: 'Ver certificado ⤢', en: 'View certificate ⤢' })}
             </button>
           </div>
         </div>
@@ -317,6 +319,7 @@ interface LightboxProps {
 }
 
 function Lightbox({ cert, pos, index, dir, onPrev, onNext, onClose }: LightboxProps) {
+  const { t, lang } = useT();
   const imgRef = useRef<HTMLImageElement>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
   const prev = useRef(-1);
@@ -343,25 +346,26 @@ function Lightbox({ cert, pos, index, dir, onPrev, onNext, onClose }: LightboxPr
       data-close=""
       role="dialog"
       aria-modal="true"
-      aria-label={`Certificado: ${cert.t}`}
+      aria-label={`${t({ pt: 'Certificado', en: 'Certificate' })}: ${cert.t}`}
       onClick={e => !swipe.wasSwiped() && (e.target as HTMLElement).hasAttribute('data-close') && onClose()}
     >
       <div className="lb-top">
         <span>
-          CERTIFICADO <span className="acc">{pos}</span>
+          {t({ pt: 'CERTIFICADO', en: 'CERTIFICATE' })} <span className="acc">{pos}</span>
         </span>
         <button ref={closeBtn} type="button" className="ghost-btn lb-close" data-close="">
-          <span className="kbd-only">ESC · </span>fechar ✕
+          <span className="kbd-only">ESC · </span>
+          {t({ pt: 'fechar ✕', en: 'close ✕' })}
         </button>
       </div>
       <div className="lb-mid" data-close="" {...swipe.handlers}>
-        <button type="button" className="round-btn lb-nav" title="Anterior" onClick={onPrev}>
+        <button type="button" className="round-btn lb-nav" title={t({ pt: 'Anterior', en: 'Previous' })} onClick={onPrev}>
           ←
         </button>
         <div className="lb-img" data-close="">
           <img ref={imgRef} src={cert.img} alt={cert.t} draggable={false} />
         </div>
-        <button type="button" className="round-btn lb-nav" title="Próximo" onClick={onNext}>
+        <button type="button" className="round-btn lb-nav" title={t({ pt: 'Próximo', en: 'Next' })} onClick={onNext}>
           →
         </button>
       </div>
@@ -369,15 +373,15 @@ function Lightbox({ cert, pos, index, dir, onPrev, onNext, onClose }: LightboxPr
         <div>
           <span className="lb-t">{cert.t}</span>
           <span className="lb-m">
-            {cert.code} · {cert.date} · {fmtMin(cert.min)}
+            {cert.code} · {fmtDate(cert.date, lang)} · {fmtMin(cert.min)}
           </span>
         </div>
         <div className="lb-actions">
           <a href={cert.pdf} target="_blank" rel="noreferrer" className="btn-acc sm">
-            Abrir PDF ↗
+            {t({ pt: 'Abrir PDF ↗', en: 'Open PDF ↗' })}
           </a>
           <a href={cert.val} target="_blank" rel="noreferrer" className="btn-line sm">
-            Validar certificado ↗
+            {t({ pt: 'Validar certificado ↗', en: 'Verify certificate ↗' })}
           </a>
         </div>
       </div>

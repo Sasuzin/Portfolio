@@ -2,6 +2,8 @@
   "name": "portfolio-lfg",
   "private": true,
   "version": "1.0.0",
+  "description": "Portfólio de Luis Felipe Galvão Torrado — React, TypeScript e three.js, em português e inglês.",
+  "homepage": "https://sasuzin.github.io/Portfolio/",
   "type": "module",
   "scripts": {
     "dev": "vite",

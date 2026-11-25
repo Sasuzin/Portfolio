@@ -1,9 +1,11 @@
 import { memo, useLayoutEffect, useRef, useState } from 'react';
 import { STACK } from '../data/stack';
+import { useT } from '../i18n';
 import { EASE, centerTab, prefersReducedMotion } from '../lib/fx';
 import SectionHead from './SectionHead';
 
 function Stack() {
+  const { t } = useT();
   const [tab, setTab] = useState(0);
   const chipsRef = useRef<HTMLDivElement>(null);
   const first = useRef(true);
@@ -27,14 +29,14 @@ function Stack() {
 
   return (
     <section id="stack" className="sec stack" aria-label="Stack">
-      <SectionHead n="05">FILTRAR POR ÁREA</SectionHead>
+      <SectionHead n="05">{t({ pt: 'FILTRAR POR ÁREA', en: 'FILTER BY AREA' })}</SectionHead>
       <h2 data-scramble="" className="h2-big">
         Stack
       </h2>
       <div className="tabs" role="tablist">
         {STACK.map(([label], i) => (
           <button
-            key={label}
+            key={i}
             type="button"
             role="tab"
             aria-selected={tab === i}
@@ -44,15 +46,15 @@ function Stack() {
               centerTab(e.currentTarget);
             }}
           >
-            {label}
+            {t(label)}
           </button>
         ))}
       </div>
       <div ref={chipsRef} className="chips" role="tabpanel">
         {STACK[tab][1].map(([n, tag]) => (
-          <div key={`${tab}-${n}`} className="chip">
-            {n}
-            <span>{tag}</span>
+          <div key={`${tab}-${t(n)}`} className="chip">
+            {t(n)}
+            <span>{t(tag)}</span>
           </div>
         ))}
       </div>
