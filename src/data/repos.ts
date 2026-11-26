@@ -49,6 +49,52 @@ const RAW: RepoInput[] = [
     liveLabel: { pt: 'Baixar v0.6.1 ↗', en: 'Download v0.6.1 ↗' },
   },
   {
+    repo: 'PokeDex---JS', t: 'Pokédex', year: '2022 · v2 2026', kind: { pt: 'Web app · PokéAPI', en: 'Web app · PokéAPI' },
+    bg: '#1B5BA0', fit: 'cover', pad: '0',
+    short: {
+      pt: 'Pokédex interativa com 3 modelos de aparelho, os 1.025 Pokémon da PokéAPI, modo Shiny, gritos e animação de captura.',
+      en: 'Interactive Pokédex with 3 device styles, all 1,025 Pokémon from PokéAPI, Shiny mode, cries and a capture animation.',
+    },
+    d: {
+      pt: 'Pokédex que roda direto no navegador, com os 1.025 Pokémon de Kanto a Paldea. Você escolhe o modelo do aparelho (Clássica, Catálogo ou Scanner), captura o seu favorito e monta uma equipe de seis na mochila. Começou como um exercício de classes e herança em JavaScript e virou uma Pokédex completa.',
+      en: 'A Pokédex that runs right in the browser, with all 1,025 Pokémon from Kanto to Paldea. Pick a device style (Classic, Catalog or Scanner), capture your favorite and build a team of six in your bag. It started as a JavaScript classes-and-inheritance exercise and grew into a full Pokédex.',
+    },
+    feats: [
+      { pt: '3 modelos: Clássica em 7 cores, Catálogo com ficha lateral e Scanner com radar de atributos', en: '3 styles: Classic in 7 colors, Catalog with a side sheet and Scanner with a stats radar' },
+      { pt: 'Busca e filtros por nome, número, geração (I a IX) e os 18 tipos', en: 'Search and filters by name, number, generation (I to IX) and all 18 types' },
+      { pt: 'Modo Shiny, grito de cada Pokémon e linha evolutiva clicável', en: 'Shiny mode, each Pokémon’s cry and a clickable evolution chain' },
+      { pt: 'Mochila com equipe de 6 e cobertura de tipos, e animação de captura com Pokébola feita em CSS', en: 'Bag with a team of 6 and type coverage, plus a capture animation with a pure-CSS Poké Ball' },
+      { pt: 'Atalhos de teclado, escolhas salvas no navegador e respeito ao "reduzir movimento"', en: 'Keyboard shortcuts, choices saved in the browser and support for "reduce motion"' },
+    ],
+    stack: ['JavaScript', 'Preact + htm', 'PokéAPI', 'ES Modules', 'CSS'],
+    imgs: ['assets/projects/pokedex-1.jpg', 'assets/projects/pokedex-2.jpg', 'assets/projects/pokedex-3.jpg', 'assets/projects/pokedex-4.jpg', 'assets/projects/pokedex-5.jpg', 'assets/projects/pokedex-6.jpg'],
+    live: 'https://sasuzin.github.io/PokeDex---JS/',
+    liveLabel: { pt: 'Abrir a Pokédex ↗', en: 'Open the Pokédex ↗' },
+  },
+  {
+    repo: 'JS-Pedra-Papel-e-Tesoura', t: 'JoKenPô', year: '2022 · v2 2026', kind: { pt: 'Jogo · Online', en: 'Game · Online' },
+    bg: '#140F2E', fit: 'cover', pad: '0',
+    short: {
+      pt: 'Pedra, papel e tesoura com visual neon, muitas animações e modo online para desafiar um amigo em tempo real, sem backend.',
+      en: 'Rock, paper, scissors with a neon look, lots of animation and an online mode to challenge a friend in real time, with no back end.',
+    },
+    d: {
+      pt: 'Pedra, papel e tesoura com placar, melhor de 3 ou de 5, efeitos e estatísticas. No modo online, os dois navegadores jogam direto entre si por WebRTC, com salas públicas ou privadas listadas ao vivo, tudo rodando no GitHub Pages, sem servidor próprio. Começou como trabalho do 2º semestre de TSI no Senac.',
+      en: 'Rock, paper, scissors with a scoreboard, best-of-3 or best-of-5 matches, effects and stats. In online mode the two browsers play directly against each other over WebRTC, with public or private rooms listed live, all running on GitHub Pages with no server of its own. It started as a 2nd-semester project of the Internet Systems program at Senac.',
+    },
+    feats: [
+      { pt: 'Animação "Jo… Ken… Pô!" com onda de choque, faíscas e confete em Canvas 2D', en: '"Jo… Ken… Pô!" animation with a shockwave, sparks and confetti on Canvas 2D' },
+      { pt: 'Modo online P2P por WebRTC (PeerJS), com salas públicas e privadas por código ou link', en: 'Peer-to-peer online mode over WebRTC (PeerJS), with public and private rooms by code or link' },
+      { pt: 'Lista de salas ao vivo por MQTT em dois servidores públicos, para continuar funcionando se um cair', en: 'Live room list over MQTT on two public brokers, so it keeps working if one goes down' },
+      { pt: 'Jogadas lacradas com SHA-256: ninguém vê a escolha do outro antes da hora', en: 'Moves sealed with SHA-256: nobody sees the other player’s choice too early' },
+      { pt: 'Sons sintetizados com Web Audio, atalhos de teclado e suporte a leitor de tela', en: 'Sounds synthesized with Web Audio, keyboard shortcuts and screen-reader support' },
+    ],
+    stack: ['JavaScript', 'WebRTC', 'MQTT', 'Web Audio', 'Canvas 2D', 'CSS'],
+    imgs: ['assets/projects/jokenpo-1.jpg', 'assets/projects/jokenpo-2.jpg', 'assets/projects/jokenpo-3.jpg', 'assets/projects/jokenpo-4.jpg', 'assets/projects/jokenpo-5.jpg'],
+    live: 'https://sasuzin.github.io/JS-Pedra-Papel-e-Tesoura/',
+    liveLabel: { pt: 'Jogar agora ↗', en: 'Play now ↗' },
+  },
+  {
     repo: 'Pi-Shounen-Store', t: 'Shonen Store', year: '2023', kind: 'E-commerce · Laravel', bg: '#000000', fit: 'contain', pad: '0',
     short: {
       pt: 'E-commerce de mangás e cultura japonesa com catálogo por categorias e tags, carrinho, pedidos e painel de administração.',
